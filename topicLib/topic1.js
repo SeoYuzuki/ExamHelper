@@ -1,7 +1,7 @@
 var topic1 = {
-  "topicName": "AZ-400 topic 1 Z",
+  "topicName": "AZ-400 topic 1",
   "topicInfo": "from www.examtopics.com",
-  "qList": [
+  "questionElementList": [
     {
       "qInfo": "",
       "title": "1",

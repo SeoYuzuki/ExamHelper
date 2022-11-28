@@ -1,368 +1,350 @@
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>考題小助手 Exam Helper</title>
-    <link rel="icon" href="./source/icon.png" type="image/x-icon" />
-    <link rel="stylesheet" type="text/css" href="./source/viewuiplus.css" />
-    <script type="text/javascript" src="./source/vue@next.js"></script>
-    <script type="text/javascript" src="./source/view-ui-plus.js"></script>
-    <script src="https://unpkg.com/http-vue-loader"></script>
 
-    <!-- 考題庫 -->
-    <script type="text/javascript" src="./topicLib/topic1.js"></script>
-    <script type="text/javascript" src="./topicLib/topic2.js"></script>
-    <script type="text/javascript" src="./topicLib/topic3.js"></script>
-    <script type="text/javascript" src="./topicLib/topic4.js"></script>
-    <script type="text/javascript" src="./topicLib/topic5.js"></script>
-    <script type="text/javascript" src="./topicLib/topic6.js"></script>
-  </head>
-  <body class="body">
-    <div id="app">
-      <div
-        :style="{'background-color':colorIn, 'color':textColor}"
-        class="text-block"
-      >
+<head>
+  <meta charset="utf-8" />
+  <title>考題小助手 Exam Helper</title>
+  <link rel="icon" href="./source/icon.png" type="image/x-icon" />
+  <link rel="stylesheet" type="text/css" href="./source/viewuiplus.css" />
+  <script type="text/javascript" src="./source/vue@next.js"></script>
+  <script type="text/javascript" src="./source/view-ui-plus.js"></script>
+  <script src="https://unpkg.com/http-vue-loader"></script>
+
+  <!-- 考題庫 -->
+  <script type="text/javascript" src="./topicLib/topic1.js"></script>
+  <script type="text/javascript" src="./topicLib/topic2.js"></script>
+  <script type="text/javascript" src="./topicLib/topic3.js"></script>
+  <script type="text/javascript" src="./topicLib/topic4.js"></script>
+  <script type="text/javascript" src="./topicLib/topic5.js"></script>
+  <script type="text/javascript" src="./topicLib/topic6.js"></script>
+  <script type="text/javascript" src="./topicLib/az104t1.js"></script>
+</head>
+
+<body class="body">
+  <div id="app">
+    <div :style="{'background-color':colorIn, 'color':textColor}" class="text-block">
+      <br />
+      <!-- 1 -->
+      <Row :gutter="16">
+        <i-col span="8">
+          <input multiple type="file" ref="file" @change="readFile()" />
+        </i-col>
+        <i-col span="6">
+          <i-select style="width: 100%" v-model="selectedTopics" multiple @on-change="topicFromWhere ='select'">
+            <i-option v-for="topic in topicLibList" :value="topic.topicName" :key="topic.topicName">
+              {{topic.topicName}}
+            </i-option>
+          </i-select>
+        </i-col>
+      </Row>
+      <!-- 2 -->
+      <Row :gutter="16">
+        <i-col span="5">
+          <Space>
+            顯示答案
+            <i-Switch v-model="isChecked"> </i-Switch>
+          </Space>
+        </i-col>
+        <i-col span="6">
+          <Space>
+            過題顯示答案
+            <i-Switch v-model="isDefaultChecked"> </i-Switch>
+          </Space>
+        </i-col>
+        <i-col span="2">
+          <i-button type="primary" @click="keydownHandler(37)">
+            <<< /i-button>
+        </i-col>
+        <i-col span="2">
+          <i-button type="primary" @click="keydownHandler(39)">>></i-button>
+        </i-col>
+        <i-col span="6">
+          <i-button type="primary" @click="isShowSetting=true">SETTING</i-button>
+        </i-col>
+      </Row>
+      <div v-if="topic">Topic Name: {{topic.topicName}}</div>
+      <br />
+      <div v-if="q">
+        <div>{{q.title}}.</div>
+        <div v-for="question in q.question">
+          <template v-if="question.startsWith('Picture:')">
+            <img class="pic" :src="`data:image/png;base64,${question.replace('Picture:','')}`" />
+          </template>
+          <div v-else>{{question}}</div>
+        </div>
         <br />
-        <!-- 1 -->
+        <br />
+        <Checkbox-Group v-model="selectedItems">
+          <template v-for="option in q.options">
+            <Row>
+              <Checkbox :label="option.optTitle" :key="option.optTitle">
+                <span :class="showError(option)">
+                  {{option.optTitle}}. {{ option.optContent }}
+                </span>
+              </Checkbox>
+            </Row>
+          </template>
+        </Checkbox-Group>
+        <br />
+        <br />
+        <br />
+      </div>
+      <Modal v-model="isShowSetting" title="考題小助手 1.0b">
+        <Row :gutter="16"> 數字鍵對應ABC, 空白或ENTER 顯示答案 </Row>
+        <br />
         <Row :gutter="16">
+          <i-col span="6"> 過題顯示答案</i-col>
           <i-col span="8">
-            <input multiple type="file" ref="file" @change="readFile()" />
-          </i-col>
-          <i-col span="6">
-            <i-select
-              style="width: 100%"
-              v-model="selectedTopics"
-              multiple
-              @on-change="topicFromWhere ='select'"
-            >
-              <i-option
-                v-for="topic in topicLibList"
-                :value="topic.topicName"
-                :key="topic.topicName"
-              >
-                {{topic.topicName}}
-              </i-option>
-            </i-select>
-          </i-col>
-        </Row>
-        <!-- 2 -->
-        <Row :gutter="16">
-          <i-col span="5">
             <Space>
-              顯示答案
-              <i-Switch v-model="isChecked"> </i-Switch>
-            </Space>
-          </i-col>
-          <i-col span="6">
-            <Space>
-              過題顯示答案
               <i-Switch v-model="isDefaultChecked"> </i-Switch>
             </Space>
           </i-col>
-          <i-col span="2">
-            <i-button type="primary" @click="keydownHandler(37)"><<</i-button>
-          </i-col>
-          <i-col span="2">
-            <i-button type="primary" @click="keydownHandler(39)">>></i-button>
-          </i-col>
-          <i-col span="6">
-            <i-button type="primary" @click="isShowSetting=true"
-              >SETTING</i-button
-            >
+        </Row>
+        <Row :gutter="16">
+          <i-col span="6"> 考題區底色 </i-col>
+          <i-col span="12">
+            <Color-Picker v-model="colorIn" recommend @on-active-change="colorIn=$event" />
           </i-col>
         </Row>
-        <div v-if="topic">Topic Name: {{topic.topicName}}</div>
-        <br />
-        <div v-if="q">
-          <div>{{q.title}}.</div>
-          <div v-for="question in q.question">
-            <template v-if="question.startsWith('Picture:')">
-              <img
-                class="pic"
-                :src="`data:image/png;base64,${question.replace('Picture:','')}`"
-              />
-            </template>
-            <div v-else>{{question}}</div>
-          </div>
-          <br />
-          <br />
-          <Checkbox-Group v-model="selectedItems">
-            <template v-for="option in q.options">
-              <Row>
-                <Checkbox :label="option.optTitle" :key="option.optTitle">
-                  <span :class="showError(option)">
-                    {{option.optTitle}}. {{ option.optContent }}
-                  </span>
-                </Checkbox>
-              </Row>
-            </template>
-          </Checkbox-Group>
-          <br />
-          <br />
-          <br />
-        </div>
-        <Modal v-model="isShowSetting" title="考題小助手 1.0b">
-          <Row :gutter="16"> 數字鍵對應ABC, 空白或ENTER 顯示答案 </Row>
-          <br />
-          <Row :gutter="16">
-            <i-col span="6"> 過題顯示答案</i-col>
-            <i-col span="8">
-              <Space>
-                <i-Switch v-model="isDefaultChecked"> </i-Switch>
-              </Space>
-            </i-col>
-          </Row>
-          <Row :gutter="16">
-            <i-col span="6"> 考題區底色 </i-col>
-            <i-col span="12">
-              <Color-Picker
-                v-model="colorIn"
-                recommend
-                @on-active-change="colorIn=$event"
-              />
-            </i-col>
-          </Row>
-          <Row :gutter="16">
-            <i-col span="6"> 字體顏色 </i-col>
-            <i-col span="12">
-              <Color-Picker
-                v-model="textColor"
-                recommend
-                @on-active-change="textColor=$event"
-              />
-            </i-col>
-          </Row>
-        </Modal>
-      </div>
+        <Row :gutter="16">
+          <i-col span="6"> 字體顏色 </i-col>
+          <i-col span="12">
+            <Color-Picker v-model="textColor" recommend @on-active-change="textColor=$event" />
+          </i-col>
+        </Row>
+      </Modal>
     </div>
-    <!-- <script src="./qList2.js"></script> -->
-    <script src="./A1Utils.js"></script>
-    <script>
-      const app = Vue.createApp({
-        data() {
-          return {
-            topicUploadList: [],
-            topicLibList: [],
+  </div>
 
-            selectedTopics: [], // 下拉選項區選擇的topicName
+  <script src="./A1Utils.js"></script>
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          topicUploadList: [],
+          topicLibList: [],
 
-            topicIndex: 0,
-            qIndex: 0,
+          selectedTopics: [], // 下拉選項區選擇的topicName
 
-            selectedItems: [],
-            isDefaultChecked: true, // 是否切換題目時依舊顯示答案
-            colorIn: " #ece7e7",
-            textColor: "#000000",
-            fontSize: "25px",
-            isChecked: false, // 是否檢查答案
+          topicIndex: 0,
+          qIndex: 0,
 
-            isShowSetting: false, // 是否顯示Read me
+          selectedItems: [],
+          isDefaultChecked: true, // 是否切換題目時依舊顯示答案
+          colorIn: " #ece7e7",
+          textColor: "#000000",
+          fontSize: "25px",
+          isChecked: false, // 是否檢查答案
 
-            topicFromWhere: "" // select,upload
-          };
+          isShowSetting: false, // 是否顯示Read me
+
+          topicFromWhere: "" // select,upload
+        };
+      },
+      computed: {
+        // 目前答案是否正確
+        isCorrect: function () {
+          return arraysEqual(this.q.answer, this.selectedItems);
         },
-        computed: {
-          // 目前答案是否正確
-          isCorrect: function () {
-            return arraysEqual(this.q.answer, this.selectedItems);
-          },
-          topicList() {
-            if (this.topicFromWhere === "select") {
-              // 顯示下拉選項區選擇的topic
-              return this.topicLibList.filter(e =>
-                this.selectedTopics.includes(e.topicName)
-              );
-            }
-            if (this.topicFromWhere === "upload") {
-              return this.topicUploadList;
-            }
-            return [];
-          },
-          topic() {
-            return this.topicList[this.topicIndex];
-          },
-          qList() {
-            if (this.topic) {
-              return this.topic.qList;
+        topicList() {
+          if (this.topicFromWhere === "select") {
+            // 顯示下拉選項區選擇的topic
+            return this.topicLibList.filter(e =>
+              this.selectedTopics.includes(e.topicName)
+            );
+          }
+          if (this.topicFromWhere === "upload") {
+            return this.topicUploadList;
+          }
+          return [];
+        },
+        topic() {
+          return this.topicList[this.topicIndex];
+        },
+        questionElementList() {
+          if (this.topic) {
+            return this.topic.questionElementList;
+          } else {
+            return null;
+          }
+        },
+        q() {
+          if (this.questionElementList) {
+            return this.questionElementList[this.qIndex];
+          } else {
+            return null;
+          }
+        },
+        questionWordsBlock() {
+          if (this.q) {
+            let block = "";
+            this.q.question.forEach(e => {
+              block = block + e + "\r\n";
+            });
+            return block;
+          }
+          return "";
+        }
+      },
+      methods: {
+        reflash() {
+          this.topicIndex = 0;
+          this.qIndex = 0;
+        },
+        showError(e) {
+          if (this.isChecked && this.q.answer.includes(e.optTitle)) {
+            if (this.isCorrect) {
+              return "border-color-green";
             } else {
-              return null;
+              return "border-color-red";
             }
-          },
-          q() {
-            if (this.qList) {
-              return this.qList[this.qIndex];
-            } else {
-              return null;
-            }
-          },
-          questionWordsBlock() {
-            if (this.q) {
-              let block = "";
-              this.q.question.forEach(e => {
-                block = block + e + "\r\n";
-              });
-              return block;
-            }
+          } else {
             return "";
           }
         },
-        methods: {
-          reflash() {
-            this.topicIndex = 0;
-            this.qIndex = 0;
-          },
-          showError(e) {
-            if (this.isChecked && this.q.answer.includes(e.optTitle)) {
-              if (this.isCorrect) {
-                return "border-color-green";
-              } else {
-                return "border-color-red";
-              }
-            } else {
-              return "";
-            }
-          },
-          /** 鍵盤輸入答案 填入 */
-          pressAns(charCode) {
-            let ansKey = charCodeMap[charCode];
-            if (!ansKey) {
-              return;
-            }
-            if (!this.selectedItems.includes(ansKey)) {
-              this.selectedItems.push(ansKey);
-            } else {
-              // remove
-              this.selectedItems = this.selectedItems.filter(
-                item => item !== ansKey
-              );
-            }
-          },
-          // 手動讀檔
-          async readFile() {
-            this.topicFromWhere = "upload";
-            this.reflash();
-            this.topicUploadList = await getTopicsByFile(this.$refs.file.files);
-          },
-          // 過題
-          changeQ(keyCode) {
-            if (![37, 38, 39, 40].includes(keyCode)) {
-              return;
-            }
-
-            if (!this.isDefaultChecked) {
-              this.isChecked = false;
-            }
-
-            if (keyCode == 37 /*左*/) {
-              if (this.qIndex == 0) {
-                if (this.topicIndex == 0) {
-                  this.$Message.warning("最前面");
-                } else {
-                  this.topicIndex = this.topicIndex - 1;
-                  this.qIndex = this.qList.length - 1;
-                }
-                return;
-              }
-              this.qIndex = this.qIndex - 1;
-            }
-            if (keyCode == 39 /*右*/) {
-              if (this.qIndex + 1 == this.qList.length) {
-                if (this.topicIndex + 1 == this.topicList.length) {
-                  this.$Message.warning("最末題");
-                } else {
-                  this.topicIndex = this.topicIndex + 1;
-                  this.qIndex = 0;
-                }
-                return;
-              }
-              this.qIndex = this.qIndex + 1;
-            }
-            if (keyCode == 38 /*上*/) {
-            }
-
-            if (keyCode == 40 /*下*/) {
-            }
-          },
-          keydownHandler(keyCode) {
-            //keydown
-            document.activeElement.blur(); // 清除focus
-            if (keyCode == 37 /*左*/ || keyCode == 39 /*右*/) {
-              this.selectedItems = [];
-            }
-
-            this.changeQ(keyCode); // 過題
-
-            let charCode = String.fromCharCode(keyCode);
-
-            this.pressAns(charCode); //輸入答案
-
-            if (charCode == "\r" /*enter*/ || charCode == " " /*space*/) {
-              // 檢查答案與否
-              this.isChecked = !this.isChecked;
-            }
+        /** 鍵盤輸入答案 填入 */
+        pressAns(charCode) {
+          let ansKey = charCodeMap[charCode];
+          if (!ansKey) {
+            return;
+          }
+          if (!this.selectedItems.includes(ansKey)) {
+            this.selectedItems.push(ansKey);
+          } else {
+            // remove
+            this.selectedItems = this.selectedItems.filter(
+              item => item !== ansKey
+            );
           }
         },
-        beforeCreate() {},
-        created() {},
-        beforeMount() {},
-        mounted() {
-          window.addEventListener("keydown", e => {
-            //keydown
-            this.keydownHandler(e.keyCode);
-          });
-
-          this.topicLibList = [topic1, topic2, topic3, topic4, topic5, topic6];
+        // 手動讀檔
+        async readFile() {
+          this.topicFromWhere = "upload";
+          this.reflash();
+          this.topicUploadList = await getTopicsByFile(this.$refs.file.files);
         },
-        activated() {},
-        deactivated() {},
-        beforeUpdate() {},
-        updated() {},
-        beforeDestroy() {},
-        destroyed() {}
-      });
-      app.use(ViewUIPlus);
-      app.mount("#app");
-    </script>
-    <style>
-      .text-block {
-        white-space: pre-wrap;
-        font-size: v-bind("fontSize");
-        /* display: inline-block;
+        // 過題
+        changeQ(keyCode) {
+          if (![37, 38, 39, 40].includes(keyCode)) {
+            return;
+          }
+
+          if (!this.isDefaultChecked) {
+            this.isChecked = false;
+          }
+
+          if (keyCode == 37 /*左*/) {
+            if (this.qIndex == 0) {
+              if (this.topicIndex == 0) {
+                this.$Message.warning("最前面");
+              } else {
+                this.topicIndex = this.topicIndex - 1;
+                this.qIndex = this.questionElementList.length - 1;
+              }
+              return;
+            }
+            this.qIndex = this.qIndex - 1;
+          }
+          if (keyCode == 39 /*右*/) {
+            if (this.qIndex + 1 == this.questionElementList.length) {
+              if (this.topicIndex + 1 == this.topicList.length) {
+                this.$Message.warning("最末題");
+              } else {
+                this.topicIndex = this.topicIndex + 1;
+                this.qIndex = 0;
+              }
+              return;
+            }
+            this.qIndex = this.qIndex + 1;
+          }
+          if (keyCode == 38 /*上*/) {
+          }
+
+          if (keyCode == 40 /*下*/) {
+          }
+        },
+        keydownHandler(keyCode) {
+          //keydown
+          document.activeElement.blur(); // 清除focus
+          if (keyCode == 37 /*左*/ || keyCode == 39 /*右*/) {
+            this.selectedItems = [];
+          }
+
+          this.changeQ(keyCode); // 過題
+
+          let charCode = String.fromCharCode(keyCode);
+
+          this.pressAns(charCode); //輸入答案
+
+          if (charCode == "\r" /*enter*/ || charCode == " " /*space*/) {
+            // 檢查答案與否
+            this.isChecked = !this.isChecked;
+          }
+        }
+      },
+      beforeCreate() { },
+      created() { },
+      beforeMount() { },
+      mounted() {
+        window.addEventListener("keydown", e => {
+          //keydown
+          this.keydownHandler(e.keyCode);
+        });
+
+        this.topicLibList = [topic1, topic2, topic3, topic4, topic5, topic6, az104t1];
+      },
+      activated() { },
+      deactivated() { },
+      beforeUpdate() { },
+      updated() { },
+      beforeDestroy() { },
+      destroyed() { }
+    });
+    app.use(ViewUIPlus);
+    app.mount("#app");
+  </script>
+  <style>
+    .text-block {
+      white-space: pre-wrap;
+      font-size: v-bind("fontSize");
+      /* display: inline-block;
         /* max-width: 200px; */
-        width: 80%;
-        left: 10%;
-        /* height: 100%; */
+      width: 80%;
+      left: 10%;
+      /* height: 100%; */
 
-        position: absolute;
-        /* top: 50%; */
+      position: absolute;
+      /* top: 50%; */
 
-        /* display: flex; */
-        /* justify-content: center; */
-        /* align-items: center; */
-      }
+      /* display: flex; */
+      /* justify-content: center; */
+      /* align-items: center; */
+    }
 
-      span {
-        font-size: v-bind("fontSize");
-      }
+    span {
+      font-size: v-bind("fontSize");
+    }
 
-      .border-color-red {
-        border-color: rgb(179, 36, 36);
-        border-width: 2px;
-        border-style: solid;
-      }
-      .border-color-green {
-        border-color: rgb(52, 153, 43);
-        border-width: 2px;
-        border-style: solid;
-      }
+    .border-color-red {
+      border-color: rgb(179, 36, 36);
+      border-width: 2px;
+      border-style: solid;
+    }
 
-      .pic {
-        max-width: 800px;
-        max-height: 800px;
-      }
-      .body {
-        background-color: rgb(90, 67, 66);
-      }
-    </style>
-  </body>
+    .border-color-green {
+      border-color: rgb(52, 153, 43);
+      border-width: 2px;
+      border-style: solid;
+    }
+
+    .pic {
+      max-width: 800px;
+      max-height: 800px;
+    }
+
+    .body {
+      background-color: rgb(90, 67, 66);
+    }
+  </style>
+</body>
+
 </html>
