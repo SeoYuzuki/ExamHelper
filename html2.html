@@ -19,6 +19,7 @@
   <script type="text/javascript" src="./topicLib/az104t1.js"></script>
   <script type="text/javascript" src="./topicLib/az104t2.js"></script>
   <script type="text/javascript" src="./topicLib/az104t3.js"></script>
+  <script type="text/javascript" src="./topicLib/az104t4.js"></script>
 </head>
 
 <body class="body">
@@ -292,7 +293,21 @@
           this.keydownHandler(e.keyCode);
         });
 
-        this.topicLibList = [topic1, topic2, topic3, topic4, topic5, topic6, az104t1, az104t2, az104t3];
+        this.topicLibList = [
+          az104t1,
+          az104t2,
+          az104t3,
+          az104t4,
+          topic1, topic2, topic3, topic4, topic5, topic6
+        ];
+        this.topicLibList.forEach(qList => {
+          // 排序
+          qList.questionElementList = qList.questionElementList.sort(function (a, b) {
+            return a.title - b.title;
+          });
+        })
+
+
       },
       activated() { },
       deactivated() { },

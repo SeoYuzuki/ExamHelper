@@ -430,7 +430,7 @@ var az104t1 = {
                 },
                 {
                     "optTitle": "C",
-                    "optContent": "You should stop all three VMs. Most Voted"
+                    "optContent": "You should stop all three VMs."
                 },
                 {
                     "optTitle": "D",
@@ -978,10 +978,6 @@ var az104t1 = {
                 },
                 {
                     "optTitle": "D",
-                    "optContent": "Most Voted"
-                },
-                {
-                    "optTitle": "E",
                     "optContent": "You should restore the VM to an on-premise Windows device."
                 }
             ]
