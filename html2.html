@@ -18,6 +18,7 @@
   <script type="text/javascript" src="./topicLib/topic6.js"></script>
   <script type="text/javascript" src="./topicLib/az104t1.js"></script>
   <script type="text/javascript" src="./topicLib/az104t2.js"></script>
+  <script type="text/javascript" src="./topicLib/az104t3.js"></script>
 </head>
 
 <body class="body">
@@ -53,7 +54,7 @@
         </i-col>
         <i-col span="2">
           <i-button type="primary" @click="keydownHandler(37)">
-            <<< /i-button>
+            << </i-button>
         </i-col>
         <i-col span="2">
           <i-button type="primary" @click="keydownHandler(39)">>></i-button>
@@ -291,7 +292,7 @@
           this.keydownHandler(e.keyCode);
         });
 
-        this.topicLibList = [topic1, topic2, topic3, topic4, topic5, topic6, az104t1, az104t2];
+        this.topicLibList = [topic1, topic2, topic3, topic4, topic5, topic6, az104t1, az104t2, az104t3];
       },
       activated() { },
       deactivated() { },
