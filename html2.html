@@ -28,41 +28,45 @@
     <div :style="{'background-color':colorIn, 'color':textColor}" class="text-block">
       <br />
       <!-- 1 -->
-      <Row :gutter="16">
-        <i-col span="8">
-          <input multiple type="file" ref="file" @change="readFile()" />
-        </i-col>
-        <i-col span="6">
-          <i-select style="width: 100%" v-model="selectedTopics" multiple @on-change="topicFromWhere ='select'">
-            <i-option v-for="topic in topicLibList" :value="topic.topicName" :key="topic.topicName">
-              {{topic.topicName}}
-            </i-option>
-          </i-select>
-        </i-col>
-      </Row>
-      <!-- 2 -->
-      <Row :gutter="16">
-        <i-col span="3">
-          <Space>
-            顯示答案
-            <i-Switch v-model="isChecked"> </i-Switch>
-          </Space>
-        </i-col>
-        <i-col span="3">
-          <i-button type="primary" @click="doSort('order')">有序</i-button>
-          <i-button type="primary" @click="doSort('shuffle')">隨機</i-button>
-        </i-col>
-        <i-col span="2">
-          <i-button type="primary" @click="keydownHandler(37)">
-            << </i-button>
-        </i-col>
-        <i-col span="2">
-          <i-button type="primary" @click="keydownHandler(39)">>></i-button>
-        </i-col>
-        <i-col span="6">
-          <i-button type="primary" @click="isShowSetting=true">SETTING</i-button>
-        </i-col>
-      </Row>
+
+      <div>
+        <Row :gutter="16">
+          <i-col span="8">
+            <input multiple type="file" ref="file" @change="readFile()" />
+          </i-col>
+          <i-col span="6">
+            <i-select style="width: 100%" v-model="selectedTopics" multiple @on-change="topicFromWhere ='select'">
+              <i-option v-for="topic in topicLibList" :value="topic.topicName" :key="topic.topicName">
+                {{topic.topicName}}
+              </i-option>
+            </i-select>
+          </i-col>
+        </Row>
+        <!-- 2 -->
+        <Row :gutter="16">
+          <i-col span="3">
+            <Space>
+              顯示答案
+              <i-Switch v-model="isChecked"> </i-Switch>
+            </Space>
+          </i-col>
+          <i-col span="3">
+            <i-button type="primary" @click="doSort('order')">有序</i-button>
+            <i-button type="primary" @click="doSort('shuffle')">隨機</i-button>
+          </i-col>
+          <i-col span="2">
+            <i-button type="primary" @click="keydownHandler(37)">
+              << </i-button>
+          </i-col>
+          <i-col span="2">
+            <i-button type="primary" @click="keydownHandler(39)">>></i-button>
+          </i-col>
+          <i-col span="6">
+            <i-button type="primary" @click="isShowSetting=true">SETTING</i-button>
+          </i-col>
+        </Row>
+      </div>
+
       <div v-if="topic">Topic Name: {{topic.topicName}}</div>
       <br />
       <div v-if="q">
@@ -317,9 +321,7 @@
           az104t5,
           topic1, topic2, topic3, topic4, topic5, topic6
         ];
-
-
-
+        this.doSort('order');
       },
       activated() { },
       deactivated() { },
