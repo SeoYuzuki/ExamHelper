@@ -96,7 +96,12 @@
             </Row>
           </template>
           <template v-if="q.answerType==='non-choice' &&isChecked">
-            {{q.answer}}
+            <div v-for="ans in q.answer">
+              <template v-if="ans.startsWith('Picture:')">
+                <img class="pic" :src="`data:image/png;base64,${ans.replace('Picture:','')}`" />
+              </template>
+              <div v-else>{{ans}}</div>
+            </div>
           </template>
 
         </Checkbox-Group>
@@ -256,10 +261,12 @@
               } else {
                 this.topicIndex = this.topicIndex - 1;
                 this.qIndex = this.questionElementList.length - 1;
+                this.randomOptions();
               }
               return;
             }
             this.qIndex = this.qIndex - 1;
+            this.randomOptions();
           }
           if (keyCode == 39 /*右*/) {
             if (this.qIndex + 1 == this.questionElementList.length) {
@@ -268,10 +275,12 @@
               } else {
                 this.topicIndex = this.topicIndex + 1;
                 this.qIndex = 0;
+                this.randomOptions();
               }
               return;
             }
             this.qIndex = this.qIndex + 1;
+            this.randomOptions();
           }
           if (keyCode == 38 /*上*/) {
           }
@@ -283,7 +292,6 @@
           //keydown
           document.activeElement.blur(); // 清除focus
           if (keyCode == 37 /*左*/ || keyCode == 39 /*右*/) {
-            this.randomOptions();
             this.selectedItems = [];
           }
 
