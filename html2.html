@@ -21,6 +21,8 @@
   <script type="text/javascript" src="./topicLib/az104t3.js"></script>
   <script type="text/javascript" src="./topicLib/az104t4.js"></script>
   <script type="text/javascript" src="./topicLib/az104t5.js"></script>
+  <script src="./A1Utils.js"></script>
+  <script src="./CookieUtil.js"></script>
 </head>
 
 <body class="body">
@@ -50,7 +52,7 @@
               <i-Switch v-model="isChecked"> </i-Switch>
             </Space>
           </i-col>
-          <i-col span="3">
+          <i-col span="5">
             <i-button type="primary" @click="doSort('order')">有序</i-button>
             <i-button type="primary" @click="doSort('shuffle')">隨機</i-button>
           </i-col>
@@ -64,8 +66,12 @@
           <i-col span="6">
             <i-button type="primary" @click="isShowSetting=true">SETTING</i-button>
           </i-col>
+          <i-col span="6">
+            <i-button type="primary" @click="setCookie(topic.topicName,q.title)">tmp</i-button>
+          </i-col>
         </Row>
       </div>
+
 
       <div v-if="topic">Topic Name: {{topic.topicName}}</div>
       <br />
@@ -121,7 +127,7 @@
     </div>
   </div>
 
-  <script src="./A1Utils.js"></script>
+
   <script>
     const app = Vue.createApp({
       data() {
@@ -302,6 +308,16 @@
               );
             })
           }
+        },
+        setCookie(topicName, title) {
+          setCookie('ppkcookie', JSON.stringify(
+            {
+              topicName: topicName,
+              title: title
+            }
+          ), 100);
+          let x = getCookie('ppkcookie');
+          console.log(x);
         }
       },
       beforeCreate() { },
