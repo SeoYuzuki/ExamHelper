@@ -86,11 +86,11 @@
         <br />
         <br />
         <Checkbox-Group v-model="selectedItems">
-          <template v-for="option in q.options">
+          <template v-for="(option,index) in q.options">
             <Row>
               <Checkbox :label="option.optTitle" :key="option.optTitle">
                 <span :class="showError(option)">
-                  {{option.optTitle}}. {{ option.optContent }}
+                  {{charCodeMap[index+1]}}. {{ option.optContent }}
                 </span>
               </Checkbox>
             </Row>
@@ -149,7 +149,8 @@
 
           isShowSetting: false, // 是否顯示Read me
 
-          topicFromWhere: "" // select,upload
+          topicFromWhere: "", // select,upload
+          charCodeMap: charCodeMap
         };
       },
       computed: {
@@ -215,7 +216,7 @@
         },
         /** 鍵盤輸入答案 填入 */
         pressAns(charCode) {
-          let ansKey = charCodeMap[charCode];
+          let ansKey = this.charCodeMap[charCode];
           if (!ansKey) {
             return;
           }
@@ -278,6 +279,7 @@
           //keydown
           document.activeElement.blur(); // 清除focus
           if (keyCode == 37 /*左*/ || keyCode == 39 /*右*/) {
+            this.randomOptions();
             this.selectedItems = [];
           }
 
@@ -318,6 +320,11 @@
           ), 100);
           let x = getCookie('ppkcookie');
           console.log(x);
+        },
+        randomOptions() {
+          this.q.options.sort(
+            () => Math.random() - 0.5
+          );
         }
       },
       beforeCreate() { },
